@@ -1,0 +1,759 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Farming Fields and Tractors API",
+    "version": "1.0.0",
+    "description": "API documentation for managing fields, tractors, and workers."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/fields": {
+      "get": {
+        "summary": "Get all fields",
+        "tags": [
+          "Fields"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      },
+                      "size_acres": {
+                        "type": "number"
+                      },
+                      "crop": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new field",
+        "tags": [
+          "Fields"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "location",
+                  "size_acres",
+                  "crop"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "size_acres": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "example": 5.5
+                  },
+                  "crop": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Field created successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          }
+        }
+      }
+    },
+    "/api/v1/fields/filter": {
+      "get": {
+        "summary": "Filter fields by crop, location, or minimum size",
+        "tags": [
+          "Fields"
+        ],
+        "parameters": [
+          {
+            "name": "crop",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by crop type"
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by location"
+          },
+          {
+            "name": "minSize",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum field size in acres"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtered fields retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/fields/{id}": {
+      "get": {
+        "summary": "Get a field by ID",
+        "tags": [
+          "Fields"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Field found"
+          },
+          "404": {
+            "description": "Field not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a field",
+        "tags": [
+          "Fields"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "size_acres": {
+                    "type": "number",
+                    "minimum": 0.1,
+                    "example": 5.5
+                  },
+                  "crop": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Field updated successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "404": {
+            "description": "Field not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a field",
+        "tags": [
+          "Fields"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Field deleted successfully"
+          },
+          "404": {
+            "description": "Field not found"
+          }
+        }
+      }
+    },
+    "/api/v1/tractors": {
+      "get": {
+        "summary": "Get all tractors",
+        "tags": [
+          "Tractors"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tractors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "field_id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new tractor",
+        "tags": [
+          "Tractors"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "model",
+                  "field_id"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Tractor A1"
+                  },
+                  "model": {
+                    "type": "string",
+                    "example": "John Deere X9"
+                  },
+                  "field_id": {
+                    "type": "string",
+                    "example": "field123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tractor created successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          }
+        }
+      }
+    },
+    "/api/v1/tractors/sorted": {
+      "get": {
+        "summary": "Get tractors sorted by model or name",
+        "tags": [
+          "Tractors"
+        ],
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "-name",
+                "model",
+                "-model"
+              ]
+            },
+            "description": "Field to sort by. Use \"-\" prefix for descending."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sorted list of tractors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "field_id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tractors/{id}": {
+      "get": {
+        "summary": "Get a tractor by ID",
+        "tags": [
+          "Tractors"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tractor retrieved successfully"
+          },
+          "404": {
+            "description": "Tractor not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a tractor",
+        "tags": [
+          "Tractors"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "model",
+                  "field_id"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Tractor A1"
+                  },
+                  "model": {
+                    "type": "string",
+                    "example": "John Deere X9"
+                  },
+                  "field_id": {
+                    "type": "string",
+                    "example": "field123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tractor updated successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "404": {
+            "description": "Tractor not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a tractor",
+        "tags": [
+          "Tractors"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tractor deleted successfully"
+          },
+          "404": {
+            "description": "Tractor not found"
+          }
+        }
+      }
+    },
+    "/api/v1/workers": {
+      "get": {
+        "summary": "Get all workers",
+        "tags": [
+          "Workers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all workers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "phone": {
+                        "type": "string"
+                      },
+                      "assigned_tractor_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "assigned_field_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new worker",
+        "tags": [
+          "Workers"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "phone"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sukhtab"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "sukhtab@example.com"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "+91 9876543210"
+                  },
+                  "assigned_tractor_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "assigned_field_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Worker created successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          }
+        }
+      }
+    },
+    "/api/v1/workers/filter": {
+      "get": {
+        "summary": "Filter workers by name or number of assigned tractors",
+        "tags": [
+          "Workers"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by worker name"
+          },
+          {
+            "name": "minAssignedTractors",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Minimum number of assigned tractors"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtered workers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workers/{id}": {
+      "get": {
+        "summary": "Get a worker by ID",
+        "tags": [
+          "Workers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Worker found"
+          },
+          "404": {
+            "description": "Worker not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a worker",
+        "tags": [
+          "Workers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "phone"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sukhtab Singh"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "sukhtab@updated.com"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "+91 9988776655"
+                  },
+                  "assigned_tractor_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "assigned_field_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Worker updated successfully"
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "404": {
+            "description": "Worker not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a worker",
+        "tags": [
+          "Workers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Worker deleted successfully"
+          },
+          "404": {
+            "description": "Worker not found"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}
